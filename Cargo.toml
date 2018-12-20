@@ -1,0 +1,7 @@
+[package]
+name = "my_home_hue"
+version = "0.1.0"
+authors = ["ayase <paper.airplane01@gmail.com>"]
+edition = "2018"
+
+[dependencies]
