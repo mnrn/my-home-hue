@@ -5,3 +5,7 @@ authors = ["ayase <paper.airplane01@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+failure="*"
+serde="*"
+serde_derive="*"
+toml="*"
