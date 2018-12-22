@@ -7,13 +7,13 @@ use serde_derive::Deserialize;
 
 // This is what we're going to decode into.
 #[derive(Debug, Deserialize)]
-struct Config {
-    bridge_ip_address: String,
-    username: String,
+pub struct Config {
+    pub bridge_ip_address: String,
+    pub username: String,
 }
 
 #[derive(Debug, Fail)]
-enum LoadConfigError {
+pub enum LoadConfigError {
     #[fail(display = "I/O Error: {:?}", error)]
     IOError {
         error: std::io::Error,
@@ -39,7 +39,7 @@ impl From<toml::de::Error> for LoadConfigError {
 
 // Parse config file.
 #[allow(dead_code)]
-fn parse_config(config_path: &Path) -> Result<Config, LoadConfigError> {
+pub fn parse_config(config_path: &Path) -> Result<Config, LoadConfigError> {
 
     let file = File::open(config_path)?;
     let mut reader = BufReader::new(file);
