@@ -2,7 +2,6 @@ use std::path::Path;
 use std::io::{Read, BufReader};
 use std::fs::File;
 
-use failure::Fail;
 use serde_derive::Deserialize;
 
 // This is what we're going to decode into.
@@ -12,33 +11,8 @@ pub struct Config {
     pub username: String,
 }
 
-#[derive(Debug, Fail)]
-pub enum LoadConfigError {
-    #[fail(display = "I/O Error: {:?}", error)]
-    IOError {
-        error: std::io::Error,
-    },
-
-    #[fail(display = "Decode Error: {:?}", error)]
-    DecodeError {
-        error: toml::de::Error,
-    },
-}
-
-impl From<std::io::Error> for LoadConfigError {
-    fn from(error: std::io::Error) -> Self {
-        LoadConfigError::IOError { error }
-    }
-}
-
-impl From<toml::de::Error> for LoadConfigError {
-    fn from(error: toml::de::Error) -> Self {
-        LoadConfigError::DecodeError { error }
-    }
-}
-
 // Parse config file.
-pub fn parse_config(config_path: &Path) -> Result<Config, LoadConfigError> {
+pub fn parse_config(config_path: &Path) -> Result<Config, failure::Error> {
 
     let file = File::open(config_path)?;
     let mut reader = BufReader::new(file);
