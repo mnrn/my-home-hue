@@ -3,8 +3,11 @@ use serde_json::Value;
 use crate::hue::light::Light;
 use crate::hue::light::LightState;
 
+/// Structure for Hue Bridge.
 pub struct Bridge {
+    /// IP Address of the bridge on your network.
     ip_address: String,
+    /// An authorized username that  the bridge creates for you.
     username: String,
 }
 

@@ -30,7 +30,9 @@ pub struct LightState {
 /// Structure for Hue Light.
 #[derive(Debug)]
 pub struct Light {
+    /// Hue Light Id.
     id: i32,
+    /// Details the state of the light.
     state: LightState,
 }
 
