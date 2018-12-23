@@ -6,7 +6,7 @@ use failure::Fail;
 use serde_derive::Deserialize;
 
 // This is what we're going to decode into.
-#[derive(Debug, Deserialize)]
+#[derive(Deserialize)]
 pub struct Config {
     pub bridge_ip_address: String,
     pub username: String,
@@ -38,7 +38,6 @@ impl From<toml::de::Error> for LoadConfigError {
 }
 
 // Parse config file.
-#[allow(dead_code)]
 pub fn parse_config(config_path: &Path) -> Result<Config, LoadConfigError> {
 
     let file = File::open(config_path)?;
@@ -55,10 +54,10 @@ pub fn parse_config(config_path: &Path) -> Result<Config, LoadConfigError> {
 #[test]
 fn test_parse_config() {
     fn test_config(config: Config) {
-        assert_eq!(config.bridge_ip_address, "192.168.1.72");
-        assert_eq!(config.username, "testuser");
+        assert_eq!(config.bridge_ip_address, "192.168.1.10");
+        assert_eq!(config.username, "3AyHHXYqfsEaWTD102MLlDNeBiJkbuk6XY8YOqK1");
     }
-    match parse_config(Path::new("./data/test_config.toml")) {
+    match parse_config(Path::new("./data/config.toml")) {
         Ok(config) => test_config(config),
         Err(error) => panic!("Error has occurred in test_parse_config(): {:?}", error),
     };
