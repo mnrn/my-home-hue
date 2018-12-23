@@ -1,4 +1,7 @@
 use std::marker::PhantomData;
+use serde_json::Value;
+use crate::hue::light::Light;
+use crate::hue::light::LightState;
 
 pub struct Bridge {
     ip_address: String,
@@ -6,11 +9,12 @@ pub struct Bridge {
 }
 
 impl Bridge {
-    pub fn get_light(self, id: i32) -> Result<serde_json::Value, reqwest::Error> {
+    /// Gets state of a given light.
+    pub fn get_light(self, id: i32) -> Result<Light, failure::Error> {
         let url = format!("http://{}/api/{}/lights/{}", self.ip_address, self.username, id);
-        let body = reqwest::get(&url)?
-                            .json()?;
-        Ok(body)
+        let mut body: Value = reqwest::get(&url)?.json()?;
+        let light_state: LightState = serde_json::from_value(body["state"].take())?;
+        Ok(Light::new(id, light_state))
     }
 }
 
