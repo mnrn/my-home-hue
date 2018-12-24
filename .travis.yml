@@ -1,0 +1,8 @@
+language: rust
+rust:
+  - "1.31"
+sudo: false
+script:
+  - cargo test
+  - cargo build
+  - cargo build --release
