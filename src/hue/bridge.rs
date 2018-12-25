@@ -77,20 +77,32 @@ impl<IpAddress> BridgeBuilder<IpAddress, Empty> {
 mod tests {
     use std::collections::HashMap;
     use crate::hue::bridge::BridgeBuilder;
+
+    #[test]
+    #[ignore]
+    fn test_get_light() {
+        let bridge = BridgeBuilder::new()
+                            .ip_address("192.168.1.10")
+                            .username("3AyHHXYqfsEaWTD102MLlDNeBiJkbuk6XY8YOqK1")
+                            .build();
+
+        match bridge.get_light(1) {
+            Ok(light) => assert!(light.is_on()),
+            Err(err) => panic!("Error has occurred in test_get_light(): {:?}", err),
+        }
+    }
+
     #[test]
     #[ignore]
     fn test_set_schedule() {
-        fn test_response(res: reqwest::Response) {
-            assert!(res.status().is_success()); 
-        }
-
         let bridge = BridgeBuilder::new()
                         .ip_address("192.168.1.10")
                         .username("3AyHHXYqfsEaWTD102MLlDNeBiJkbuk6XY8YOqK1")
                         .build();
+
         let body: HashMap<&str, &str> = [("status", "disabled")].iter().cloned().collect();
         match bridge.set_schedule(6, &body) {
-            Ok(res) => test_response(res),
+            Ok(res) => assert!(res.status().is_success()),
             Err(err) => panic!("Error has occurred in test_set_schedule(): {:?}", err),
         }
     }
