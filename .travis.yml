@@ -6,3 +6,6 @@ script:
   - cargo test
   - cargo build
   - cargo build --release
+notifications:
+  email:
+    on_success: false
