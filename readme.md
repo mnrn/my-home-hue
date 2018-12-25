@@ -1,5 +1,7 @@
 # My Home Hue
 
+[![Build Status](https://travis-ci.org/mnrn/my-home-hue.svg?branch=master)](https://travis-ci.org/mnrn/my-home-hue)
+
 Setting my home hue surroundings.
 
 ## Reference
