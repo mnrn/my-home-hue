@@ -14,7 +14,7 @@ pub struct ScheduleCommand {
 
 /// a schedule that have been added to the bridge.
 #[derive(Debug, Deserialize)]
-struct Schedule {
+pub struct Schedule {
     /// The name of the schedule.
     name: String,
     /// Description of the schedule.
