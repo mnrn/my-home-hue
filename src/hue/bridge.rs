@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use serde_json::Value;
+use serde::Serialize;
 use crate::hue::light::Light;
 use crate::hue::light::LightState;
 
@@ -15,9 +15,18 @@ impl Bridge {
     /// Gets state of a given light.
     pub fn get_light(self, id: i32) -> Result<Light, failure::Error> {
         let url = format!("http://{}/api/{}/lights/{}", self.ip_address, self.username, id);
-        let mut body: Value = reqwest::get(&url)?.json()?;
+        let mut body: serde_json::Value = reqwest::get(&url)?.json()?;
         let light_state: LightState = serde_json::from_value(body["state"].take())?;
         Ok(Light::new(id, light_state))
+    }
+
+    /// Allows the user to change attributes of a schedule.
+    pub fn set_schedule<T: Serialize + ?Sized>(self, id: i32, body: &T) -> Result<reqwest::Response,reqwest::Error> {
+        let url = format!("http://{}/api/{}/schedules/{}", self.ip_address, self.username, id);
+        reqwest::Client::new()
+                        .put(&url)
+                        .json(body)
+                        .send()
     }
 }
 
@@ -60,6 +69,29 @@ impl<IpAddress> BridgeBuilder<IpAddress, Empty> {
             ip_address: self.ip_address,
             username: Some(username.into()),
             state: (self.state.0, PhantomData),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use crate::hue::bridge::BridgeBuilder;
+    #[test]
+    #[ignore]
+    fn test_set_schedule() {
+        fn test_response(res: reqwest::Response) {
+            assert!(res.status().is_success()); 
+        }
+
+        let bridge = BridgeBuilder::new()
+                        .ip_address("192.168.1.10")
+                        .username("3AyHHXYqfsEaWTD102MLlDNeBiJkbuk6XY8YOqK1")
+                        .build();
+        let body: HashMap<&str, &str> = [("status", "disabled")].iter().cloned().collect();
+        match bridge.set_schedule(6, &body) {
+            Ok(res) => test_response(res),
+            Err(err) => panic!("Error has occurred in test_set_schedule(): {:?}", err),
         }
     }
 }
