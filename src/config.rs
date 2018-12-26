@@ -25,7 +25,7 @@ pub struct Empty;
 pub struct Fully;
 pub struct ConfigBuilder<ConfigPath> {
     config_path: Option<Box<Path>>,
-    state: PhantomData<ConfigPath>
+    state: PhantomData<ConfigPath>,
 }
 impl ConfigBuilder<Empty> {
     pub fn new() -> ConfigBuilder<Empty> {
