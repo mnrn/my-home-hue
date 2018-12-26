@@ -2,6 +2,7 @@ use std::io::{Read, BufReader};
 use std::fs::File;
 use std::marker::PhantomData;
 use std::path::Path;
+use std::boxed::Box;
 use serde_derive::Deserialize;
 
 // This is what we're going to decode into.
@@ -22,29 +23,29 @@ impl Config {
 
 pub struct Empty;
 pub struct Fully;
-pub struct ConfigBuilder<'a, ConfigPath> {
-    config_path: &'a Path,
+pub struct ConfigBuilder<ConfigPath> {
+    config_path: Option<Box<Path>>,
     state: PhantomData<ConfigPath>
 }
-impl<'a> ConfigBuilder<'a, Empty> {
-    pub fn new() -> ConfigBuilder<'a, Empty> {
+impl ConfigBuilder<Empty> {
+    pub fn new() -> ConfigBuilder<Empty> {
         ConfigBuilder { 
-            config_path: Path::new("."),
+            config_path: None,
             state: PhantomData,
         }
     }
 
-    pub fn config_path<P: AsRef<Path> + ?Sized>(self, config_path: &'a P) -> ConfigBuilder<'a, Fully> {
+    pub fn config_path<P: AsRef<Path>>(self, config_path: P) -> ConfigBuilder<Fully> {
         ConfigBuilder {
-            config_path: config_path.as_ref(),
+            config_path: Some(From::from(config_path.as_ref())),
             state: PhantomData,
         }
     }
 }
-impl<'a> ConfigBuilder<'a, Fully> {
+impl ConfigBuilder<Fully> {
     // Parse config file.
     pub fn build(self) -> Result<Config, failure::Error> {
-        let file = File::open(self.config_path)?;
+        let file = File::open(self.config_path.unwrap())?;
         let mut reader = BufReader::new(file);
 
         // read into a String.
