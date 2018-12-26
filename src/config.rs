@@ -1,7 +1,7 @@
 use std::io::{Read, BufReader};
 use std::fs::File;
 use std::marker::PhantomData;
-use std::default::Default;
+use std::path::Path;
 use serde_derive::Deserialize;
 
 // This is what we're going to decode into.
@@ -22,28 +22,29 @@ impl Config {
 
 pub struct Empty;
 pub struct Fully;
-pub struct ConfigBuilder<ConfigPath> {
-    config_path: String,
+pub struct ConfigBuilder<'a, ConfigPath> {
+    config_path: &'a Path,
     state: PhantomData<ConfigPath>
 }
-impl ConfigBuilder<Empty> {
-    pub fn new() -> ConfigBuilder<Empty> {
+impl<'a> ConfigBuilder<'a, Empty> {
+    pub fn new() -> ConfigBuilder<'a, Empty> {
         ConfigBuilder { 
-            config_path: Default::default(),
+            config_path: Path::new("."),
             state: PhantomData,
         }
     }
-    pub fn config_path<S: Into<String>>(self, config_path: S) -> ConfigBuilder<Fully> {
+
+    pub fn config_path<P: AsRef<Path> + ?Sized>(self, config_path: &'a P) -> ConfigBuilder<'a, Fully> {
         ConfigBuilder {
-            config_path: config_path.into(),
+            config_path: config_path.as_ref(),
             state: PhantomData,
         }
     }
 }
-impl ConfigBuilder<Fully> {
+impl<'a> ConfigBuilder<'a, Fully> {
     // Parse config file.
     pub fn build(self) -> Result<Config, failure::Error> {
-        let file = File::open(&self.config_path)?;
+        let file = File::open(self.config_path)?;
         let mut reader = BufReader::new(file);
 
         // read into a String.
