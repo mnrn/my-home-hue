@@ -14,7 +14,7 @@ pub struct Bridge {
 
 impl Bridge {
     /// Gets state of a given light.
-    pub fn get_light(self, id: i32) -> Result<Light, failure::Error> {
+    pub fn get_light(self, id: u32) -> Result<Light, failure::Error> {
         let url = format!("http://{}/api/{}/lights/{}", self.ip_address, self.username, id);
         let mut body: serde_json::Value = reqwest::get(&url)?.json()?;
         let light_state: LightState = serde_json::from_value(body["state"].take())?;
@@ -22,7 +22,7 @@ impl Bridge {
     }
 
     /// Allows the user to change attributes of a schedule.
-    pub fn set_schedule<T: Serialize + ?Sized>(self, id: i32, body: &T) -> Result<reqwest::Response,reqwest::Error> {
+    pub fn set_schedule<T: Serialize + ?Sized>(self, id: u32, body: &T) -> Result<reqwest::Response,reqwest::Error> {
         let url = format!("http://{}/api/{}/schedules/{}", self.ip_address, self.username, id);
         reqwest::Client::new()
                         .put(&url)

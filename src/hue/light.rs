@@ -31,14 +31,14 @@ pub struct LightState {
 #[derive(Debug)]
 pub struct Light {
     /// Hue Light Id.
-    id: i32,
+    id: u32,
     /// Details the state of the light.
     state: LightState,
 }
 
 impl Light {
     /// Return a light with a state givin them.
-    pub fn new(id: i32, state: LightState) -> Light {
+    pub fn new(id: u32, state: LightState) -> Light {
         Light {
             id: id,
             state: state,
