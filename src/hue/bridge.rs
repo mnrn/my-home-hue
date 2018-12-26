@@ -1,4 +1,5 @@
 use std::marker::PhantomData;
+use std::default::Default;
 use serde::Serialize;
 use crate::hue::light::Light;
 use crate::hue::light::LightState;
@@ -33,15 +34,15 @@ impl Bridge {
 pub struct Empty;
 pub struct Fully;
 pub struct BridgeBuilder<IpAddress, Username> {
-    ip_address: Option<String>,
-    username: Option<String>,
+    ip_address: String,
+    username: String,
     state: (PhantomData<IpAddress>, PhantomData<Username>),
 }
 impl BridgeBuilder<Empty, Empty> {
     pub fn new() -> Self {
         BridgeBuilder { 
-            ip_address: None, 
-            username: None,
+            ip_address: Default::default(), 
+            username: Default::default(),
             state: (PhantomData, PhantomData) 
         }
     }
@@ -49,25 +50,25 @@ impl BridgeBuilder<Empty, Empty> {
 impl BridgeBuilder<Fully, Fully> {
     pub fn build(self) -> Bridge {
         Bridge { 
-            ip_address: self.ip_address.unwrap(),
-            username: self.username.unwrap(),
+            ip_address: self.ip_address,
+            username: self.username,
         }
     }
 }
 impl<Username> BridgeBuilder<Empty, Username> {
-    pub fn ip_address<T: Into<String>>(self, ip_address: T) -> BridgeBuilder<Fully, Username> {
+    pub fn ip_address<S: Into<String>>(self, ip_address: S) -> BridgeBuilder<Fully, Username> {
         BridgeBuilder {
-            ip_address: Some(ip_address.into()),
+            ip_address: ip_address.into(),
             username: self.username,
             state: (PhantomData, self.state.1),
         }
     }
 }
 impl<IpAddress> BridgeBuilder<IpAddress, Empty> {
-    pub fn username<T: Into<String>>(self, username: T) -> BridgeBuilder<IpAddress, Fully> {
+    pub fn username<S: Into<String>>(self, username: S) -> BridgeBuilder<IpAddress, Fully> {
         BridgeBuilder {
             ip_address: self.ip_address,
-            username: Some(username.into()),
+            username: username.into(),
             state: (self.state.0, PhantomData),
         }
     }
