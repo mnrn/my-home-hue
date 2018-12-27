@@ -37,7 +37,7 @@ pub struct Light {
 }
 
 impl Light {
-    /// Return a light with a state givin them.
+    /// Return a light with a state given them.
     pub fn new(id: u32, state: LightState) -> Light {
         Light {
             id: id,
