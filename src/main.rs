@@ -9,6 +9,7 @@ extern crate chrono;
 
 use std::collections::HashMap;
 use std::io::Write;
+use serde_json::Value;
 use log::{LevelFilter, error, info};
 use env_logger::Builder;
 use chrono::Local;
@@ -38,13 +39,15 @@ fn main() {
     let light = bridge.get_light(LIGHT_ID)
                     .map_err(|err| error!("Error has occurred in bridge.get_light: {:?}", err))
                     .unwrap();
-    let body: HashMap<&str, &str> = if light.is_on() { 
-        [("status", "enabled")]
-    } else {
-        [("status", "disabled")]
-    }.iter().cloned().collect();
-    let res = bridge.set_schedule(SCHEDULE_ID, &body)
-                    .map_err(|err| error!("Error has occurred in bridge.set_schedule: {:?}", err))
-                    .unwrap();
+    info!("{}", format!("Light/{} is {}", LIGHT_ID, if light.is_on() { "On" } else { "Off" }));
+
+    let schedule_status = if light.is_on() { "enabled" } else { "disabled" };
+    let body: HashMap<&str, &str> = [("status", schedule_status)].iter().cloned().collect();
+    let res: Value = bridge.set_schedule(SCHEDULE_ID, &body)
+                        .map_err(|err| error!("Error has occurred in bridge.set_schedule: {:?}", err))
+                        .unwrap()
+                        .json()
+                        .map_err(|err| error!("Error has occurred in reqwest::Response::json: {:?}", err))
+                        .unwrap();
     info!("{:#?}", res);
 }
