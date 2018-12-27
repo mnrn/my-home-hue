@@ -3,8 +3,15 @@ extern crate serde_derive;
 extern crate serde_json;
 extern crate toml;
 extern crate reqwest;
+extern crate log;
+extern crate env_logger;
+extern crate chrono;
 
 use std::collections::HashMap;
+use std::io::Write;
+use log::{LevelFilter, error, info};
+use env_logger::Builder;
+use chrono::Local;
 use my_home_hue::hue::bridge::BridgeBuilder;
 
 fn main() {
@@ -13,18 +20,31 @@ fn main() {
     const LIGHT_ID: u32 = 1;
     const SCHEDULE_ID: u32 = 1;
 
+    Builder::new()
+        .format(|buf, record| {
+            writeln!(buf, "{} [{}] - {}",
+                Local::now().format("%Y-%m-%dT%H:%M:%S"),
+                record.level(),
+                record.args()
+            )
+        })
+        .filter(None, LevelFilter::Info)
+        .init();
+
     let bridge = BridgeBuilder::new()
-                                .ip_address(BRIDGE_IP_ADDRESS)
-                                .username(USERNAME)
-                                .build();
+                            .ip_address(BRIDGE_IP_ADDRESS)
+                            .username(USERNAME)
+                            .build();
     let light = bridge.get_light(LIGHT_ID)
-                        .expect("Error has occurred in bridge.get_light");
+                    .map_err(|err| error!("Error has occurred in bridge.get_light: {:?}", err))
+                    .unwrap();
     let body: HashMap<&str, &str> = if light.is_on() { 
         [("status", "enabled")]
     } else {
         [("status", "disabled")]
     }.iter().cloned().collect();
     let res = bridge.set_schedule(SCHEDULE_ID, &body)
-                    .expect("Error has occurred in bridge.set_schedule");
-    println!("{:#?}", res);
+                    .map_err(|err| error!("Error has occurred in bridge.set_schedule: {:?}", err))
+                    .unwrap();
+    info!("{:#?}", res);
 }
