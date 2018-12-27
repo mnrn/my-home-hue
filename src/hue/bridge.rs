@@ -22,7 +22,7 @@ impl Bridge {
     }
 
     /// Allows the user to change attributes of a schedule.
-    pub fn set_schedule<T: Serialize + ?Sized>(self, id: u32, body: &T) -> Result<reqwest::Response,reqwest::Error> {
+    pub fn set_schedule<T: Serialize + ?Sized>(self, id: u32, body: &T) -> Result<reqwest::Response, reqwest::Error> {
         let url = format!("http://{}/api/{}/schedules/{}", self.ip_address, self.username, id);
         reqwest::Client::new()
                         .put(&url)
