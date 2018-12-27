@@ -46,7 +46,7 @@ impl Light {
     }
 
     /// On/Off state of the light. On=true, Off=false.
-    pub fn is_on(self) -> bool {
+    pub fn is_on(&self) -> bool {
         self.state.on
     }
 }
