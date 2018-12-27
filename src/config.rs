@@ -28,7 +28,7 @@ pub struct ConfigBuilder<ConfigPath> {
     state: PhantomData<ConfigPath>,
 }
 impl ConfigBuilder<Empty> {
-    pub fn new() -> ConfigBuilder<Empty> {
+    pub fn new() -> Self {
         ConfigBuilder { 
             config_path: None,
             state: PhantomData,
