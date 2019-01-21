@@ -18,9 +18,11 @@ use my_home_hue::hue::bridge::BridgeBuilder;
 // My home hue service.
 fn service() -> Result<(), Error> {
     // Gets state of a my home hue light.
+    let ip_address = std::env::var("HUE_BRIDGE_IP_ADDRESS")?;
+    let username = std::env::var("HUE_USERNAME")?;
     let bridge = BridgeBuilder::new()
-                            .ip_address("192.168.1.10")
-                            .username("3AyHHXYqfsEaWTD102MLlDNeBiJkbuk6XY8YOqK1")
+                            .ip_address(ip_address)
+                            .username(username)
                             .build();
     const LIGHT_ID: u32 = 1;
     let light = bridge.get_light(LIGHT_ID)?;

@@ -82,9 +82,11 @@ mod tests {
     #[test]
     #[ignore]
     fn test_get_light() {
+        let ip_address = std::env::var("HUE_BRIDGE_IP_ADDRESS").unwrap();
+        let username = std::env::var("HUE_USERNAME").unwrap();
         let bridge = BridgeBuilder::new()
-                            .ip_address("192.168.1.10")
-                            .username("3AyHHXYqfsEaWTD102MLlDNeBiJkbuk6XY8YOqK1")
+                            .ip_address(ip_address)
+                            .username(username)
                             .build();
 
         match bridge.get_light(1) {
@@ -96,9 +98,11 @@ mod tests {
     #[test]
     #[ignore]
     fn test_set_schedule() {
+        let ip_address = std::env::var("HUE_BRIDGE_IP_ADDRESS").unwrap();
+        let username = std::env::var("HUE_USERNAME").unwrap();
         let bridge = BridgeBuilder::new()
-                        .ip_address("192.168.1.10")
-                        .username("3AyHHXYqfsEaWTD102MLlDNeBiJkbuk6XY8YOqK1")
+                        .ip_address(ip_address)
+                        .username(username)
                         .build();
 
         let body: HashMap<&str, &str> = [("status", "disabled")].iter().cloned().collect();
